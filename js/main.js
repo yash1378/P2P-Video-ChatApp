@@ -96,24 +96,19 @@ let handleuserjoin = async (MemberId)=>{
     createoffer(MemberId)
 }
 
-let handleMessageFromPeer = async (message,MemberId)=>{
-    message = JSON.parse(message.text)
-    // console.log('Message:',message.text)
-    if(message.type === 'offer'){
-        createanswer(MemberId,message.offer)
-    }
-    if(message.type === 'answer'){
-        addAnswer(message.answer)
-    }
-    if(message.type === 'candidate'){
-        if(peerConnection){
-            peerConnection.addIceCandidate(message.candidate)
-        }
+let handleMessageFromPeer = async (message, MemberId) => {
+    message = JSON.parse(message.text);
+
+    if (message.type === 'offer') {
+        createanswer(MemberId, message.offer);
+    } else if (message.type === 'answer') {
+        addAnswer(message.answer);
+    } else if (message.type === 'candidate' && peerConnection.remoteDescription) {
+        peerConnection.addIceCandidate(message.candidate);
     }
 
-    //only message will work as we have already parsed it
-    console.log('Message:',message,' -> ',message.type)
-}
+    console.log('Message:', message, ' -> ', message.type);
+};
 
 
 let createPeerConnection = async(MemberId)=>{
@@ -180,11 +175,18 @@ let createanswer = async(MemberId,offer)=>{
     client.sendMessageToPeer({text:JSON.stringify({'type':'answer','answer':answer})},MemberId)
 }
 
-let addAnswer = async (answer) =>{
-    if(!peerConnection.currentRemoteDescription){
-        peerConnection.setRemoteDescription(answer)
+// let addAnswer = async (answer) =>{
+//     if(!peerConnection.currentRemoteDescription){
+//         peerConnection.setRemoteDescription(answer)
+//     }
+// }
+
+let addAnswer = async (answer) => {
+    if (!peerConnection.currentRemoteDescription) {
+        await peerConnection.setRemoteDescription(answer);
     }
-}
+};
+
 
 
 let leaveChannel = async () =>{
