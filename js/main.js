@@ -26,7 +26,9 @@ let peerConnection; //core interface to connect to that user
 const servers = {
     iceServers:[
         {
-            urls:['stun:stun1.1.google.com:19302','stun:stun2.1.google.com:19302']
+            urls:[ 
+            'stun:stun3.l.google.com:19302',
+            'stun:stun4.l.google.com:19302']
         }
     ]
 }
@@ -85,11 +87,10 @@ let init = async()=>{
 
 }
 
-
-let handleUserLeft = (MemberId) =>{
-    document.getElementById('user-2').style.display = 'none'
-    document.getElementById('user-1').classList.remove('smallFrame')
-}
+let handleUserLeft = (MemberId) => {
+    document.getElementById('user-2').style.display = 'none';
+    document.getElementById('user-1').classList.remove('smallFrame');
+};
 
 let handleuserjoin = async (MemberId)=>{
     console.log('New user has joined the chat:',MemberId)
@@ -101,9 +102,10 @@ let handleMessageFromPeer = async (message, MemberId) => {
 
     if (message.type === 'offer') {
         createanswer(MemberId, message.offer);
-    } else if (message.type === 'answer') {
+    }
+    if (message.type === 'answer') {
         addAnswer(message.answer);
-    } else if (message.type === 'candidate' && peerConnection.remoteDescription) {
+    }if (message.type === 'candidate' && peerConnection.remoteDescription) {
         peerConnection.addIceCandidate(message.candidate);
     }
 
